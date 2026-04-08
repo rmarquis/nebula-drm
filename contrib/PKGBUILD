@@ -15,15 +15,13 @@ sha256sums=('SKIP')
 
 build() {
     cd "$pkgname-$pkgver"
-    zig build -Doptimize=ReleaseSafe --prefix "$pkgdir/usr"
+    zig build -Doptimize=ReleaseSafe
 }
 
 package() {
     cd "$pkgname-$pkgver"
 
-    # Binary (installed by zig build --prefix above)
-    # Ensure correct permissions
-    chmod 755 "$pkgdir/usr/bin/$pkgname"
+    install -Dm755 "zig-out/bin/$pkgname" "$pkgdir/usr/bin/$pkgname"
 
     # systemd service unit
     install -Dm644 "systemd/$pkgname.service" \

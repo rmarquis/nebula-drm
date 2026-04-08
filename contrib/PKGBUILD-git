@@ -22,13 +22,13 @@ pkgver() {
 
 build() {
     cd "$_pkgname"
-    zig build -Doptimize=ReleaseSafe --prefix "$pkgdir/usr"
+    zig build -Doptimize=ReleaseSafe
 }
 
 package() {
     cd "$_pkgname"
 
-    chmod 755 "$pkgdir/usr/bin/nebula-drm"
+    install -Dm755 "zig-out/bin/nebula-drm" "$pkgdir/usr/bin/nebula-drm"
 
     install -Dm644 "systemd/nebula-drm.service" \
         "$pkgdir/usr/lib/systemd/system/nebula-drm.service"
