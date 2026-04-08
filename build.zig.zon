@@ -1,0 +1,14 @@
+.{
+    .name = .nebula_drm,
+    .fingerprint = 0x3f102b5184b945f4,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.15.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "LICENSE",
+        "README.md",
+    },
+}
