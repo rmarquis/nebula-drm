@@ -8,6 +8,7 @@ url="https://github.com/rmarquis/nebula-drm"
 license=('MIT')
 depends=('libdrm')
 makedepends=('zig')
+install=nebula-drm.install
 backup=('etc/nebula-drm.conf')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
 # Update sha256sums with: makepkg -g

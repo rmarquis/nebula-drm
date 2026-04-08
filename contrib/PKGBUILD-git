@@ -11,6 +11,7 @@ depends=('libdrm')
 makedepends=('zig' 'git')
 provides=("$_pkgname")
 conflicts=("$_pkgname")
+install=nebula-drm.install
 backup=('etc/nebula-drm.conf')
 source=("$_pkgname::git+https://github.com/rmarquis/nebula-drm.git")
 sha256sums=('SKIP')
