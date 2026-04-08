@@ -9,8 +9,8 @@ After=systemd-udev-settle.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# Adjust coordinates and temperatures to taste
-ExecStart=/usr/bin/nebula-drm -l 0.00:0.00 -t 6500:4500 -v
+EnvironmentFile=/etc/nebula-drm.conf
+ExecStart=/usr/bin/nebula-drm -l ${NEBULA_LOCATION} -t ${NEBULA_TEMP} -b ${NEBULA_BRIGHTNESS} ${NEBULA_CARD} -v
 # Requires root to acquire DRM master outside compositor
 User=root
 # Sandbox: only needs /dev/dri access
