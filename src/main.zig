@@ -95,8 +95,8 @@ pub fn main() !void {
         .brightness = cfg.brightness,
     }) catch |err| {
         std.log.err("DRM error: {s}", .{@errorName(err)});
-        if (err == drm.DrmError.SetMasterFailed) {
-            std.log.err("hint: run as root, and ensure no compositor is holding DRM master", .{});
+        if (err == drm.DrmError.OpenFailed) {
+            std.log.err("hint: ensure the user is in the 'video' group", .{});
         }
         std.process.exit(1);
     };

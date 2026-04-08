@@ -1,9 +1,7 @@
 [Unit]
 Description=DRM color temperature (nebula-drm)
 Documentation=https://github.com/rmarquis/nebula-drm
-# Run before the display manager so DRM master is available
 Before=greetd.service
-# Ensure DRM devices are settled before we try to open them
 After=systemd-udev-settle.service
 
 [Service]
@@ -11,9 +9,10 @@ Type=oneshot
 RemainAfterExit=yes
 EnvironmentFile=/etc/nebula-drm.conf
 ExecStart=/usr/bin/nebula-drm -l ${NEBULA_LOCATION} -t ${NEBULA_TEMP} -b ${NEBULA_BRIGHTNESS} ${NEBULA_CARD} -v
-# Requires root to acquire DRM master outside compositor
-User=root
-# Sandbox: only needs /dev/dri access
+# DRM gamma (SETGAMMA ioctl) does not require DRM master — video group access is enough
+DynamicUser=yes
+SupplementaryGroups=video
+# Sandbox
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
