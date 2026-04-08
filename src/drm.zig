@@ -10,6 +10,9 @@ pub const DrmError = error{
     NoDeviceFound,
     OpenFailed,
     GetResourcesFailed,
+    /// Acquiring DRM master failed — another process (compositor) already holds it.
+    /// This tool must run before the display manager starts.
+    MasterUnavailable,
     SetGammaFailed,
     OutOfMemory,
 };
@@ -45,6 +48,9 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
     const fd_usize = std.posix.open(path, .{ .ACCMODE = .RDWR }, 0) catch return DrmError.OpenFailed;
     const fd: c_int = @intCast(fd_usize);
     defer std.posix.close(fd_usize);
+
+    if (c.drmSetMaster(fd) != 0) return DrmError.MasterUnavailable;
+    defer _ = c.drmDropMaster(fd);
 
     const res: *c.drmModeRes = @ptrCast(c.drmModeGetResources(fd) orelse return DrmError.GetResourcesFailed);
     defer c.drmModeFreeResources(res);

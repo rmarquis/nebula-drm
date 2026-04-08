@@ -95,8 +95,8 @@ pub fn main() !void {
         .brightness = cfg.brightness,
     }) catch |err| {
         std.log.err("DRM error: {s}", .{@errorName(err)});
-        if (err == drm.DrmError.OpenFailed) {
-            std.log.err("hint: ensure the user is in the 'video' group", .{});
+        if (err == drm.DrmError.MasterUnavailable) {
+            std.log.err("hint: a compositor is holding DRM master — run this tool before the display manager starts", .{});
         }
         std.process.exit(1);
     };

@@ -9,9 +9,8 @@ Type=oneshot
 RemainAfterExit=yes
 EnvironmentFile=/etc/nebula-drm.conf
 ExecStart=/usr/bin/nebula-drm -l ${NEBULA_LOCATION} -t ${NEBULA_TEMP} -b ${NEBULA_BRIGHTNESS} ${NEBULA_CARD} -v
-# DRM gamma (SETGAMMA ioctl) does not require DRM master — video group access is enough
-DynamicUser=yes
-SupplementaryGroups=video
+# Needs DRM master, which requires root at boot before any session exists
+User=root
 # Sandbox
 PrivateTmp=true
 ProtectSystem=strict
