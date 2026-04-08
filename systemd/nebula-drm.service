@@ -1,0 +1,24 @@
+[Unit]
+Description=DRM color temperature (nebula-drm)
+Documentation=https://github.com/rmarquis/nebula-drm
+# Run before the display manager so DRM master is available
+Before=greetd.service
+# Ensure DRM devices are settled before we try to open them
+After=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Adjust coordinates and temperatures to taste
+ExecStart=/usr/bin/nebula-drm -l 0.00:0.00 -t 6500:4500 -v
+# Requires root to acquire DRM master outside compositor
+User=root
+# Sandbox: only needs /dev/dri access
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+DeviceAllow=/dev/dri rw
+DevicePolicy=closed
+
+[Install]
+WantedBy=graphical.target
