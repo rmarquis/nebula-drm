@@ -55,6 +55,9 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
         const crtc: *c.drmModeCrtc = @ptrCast(c.drmModeGetCrtc(fd, crtc_id) orelse continue);
         defer c.drmModeFreeCrtc(crtc);
 
+        // Skip CRTCs with no active display (mode_valid == 0 means unconnected)
+        if (crtc.mode_valid == 0) continue;
+
         const gamma_size: usize = @intCast(crtc.gamma_size);
         if (gamma_size == 0) continue;
 
@@ -70,6 +73,9 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
         colortemp.fillLut(blue, gamma.b, gamma.brightness);
 
         const ret = c.drmModeCrtcSetGamma(fd, crtc_id, @intCast(gamma_size), red.ptr, green.ptr, blue.ptr);
-        if (ret != 0) return DrmError.SetGammaFailed;
+        if (ret != 0) {
+            std.log.err("drmModeCrtcSetGamma failed for CRTC {d}: errno {d}", .{ crtc_id, -ret });
+            return DrmError.SetGammaFailed;
+        }
     }
 }
