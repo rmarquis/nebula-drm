@@ -1,12 +1,14 @@
 # nebula-drm
 
-DRM-based color temperature tool with solar position calculation.
+DRM-based color temperature tool with solar position calculation, as a stopgap until COSMIC DE implements native gamma control.
 
 ## Purpose
 
-COSMIC DE does not implement the `wlr-gamma-control-unstable-v1` Wayland protocol, so tools like wlsunset and gammastep cannot control color temperature from within the session. Redshift is X11-only and does not work on Wayland at all. The workaround is to manipulate DRM gamma tables directly via libdrm, before the compositor acquires DRM master.
+COSMIC DE does not yet implement the `wlr-gamma-control-unstable-v1` Wayland protocol (tracked at [pop-os/cosmic-comp#2059](https://github.com/pop-os/cosmic-comp/issues/2059)). Until it does, tools like wlsunset and gammastep cannot control color temperature from within a COSMIC session. Redshift is X11-only and does not apply on Wayland at all.
 
-nebula-drm applies a color temperature to all active displays based on the current UTC time and your geographic position. It transitions smoothly between day and night temperatures across civil twilight (solar elevation −6° to +6°). It is designed to run once at boot, before the display manager starts, and the gamma setting persists for the duration of the session since COSMIC does not reset gamma tables it does not manage.
+nebula-drm works around this by manipulating DRM gamma tables directly via libdrm, before the compositor acquires DRM master. It applies a color temperature to all active displays based on the current UTC time and your geographic position, transitioning smoothly between day and night temperatures across civil twilight (solar elevation −6° to +6°). It is designed to run once at boot, before the display manager starts, and the gamma setting persists for the duration of the session since COSMIC does not reset gamma tables it does not manage.
+
+**Once `wlr-gamma-control-unstable-v1` is implemented in cosmic-comp, nebula-drm will be obsolete.** At that point, switch to wlsunset or gammastep for proper in-session color temperature management with smooth transitions.
 
 ## Requirements
 
