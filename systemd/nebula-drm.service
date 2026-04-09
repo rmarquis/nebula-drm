@@ -15,7 +15,7 @@ User=root
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-DeviceAllow=/dev/dri rw
+DeviceAllow=char-drm rw
 DevicePolicy=closed
 
 [Install]
