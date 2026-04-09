@@ -38,6 +38,7 @@ pub fn main() !void {
     var cfg = Args{};
 
     while (args_iter.next()) |arg| {
+        if (arg.len == 0) continue;
         if (std.mem.eql(u8, arg, "-l")) {
             const val = args_iter.next() orelse fatal("missing value for -l");
             cfg = parseLocation(cfg, val) catch fatal("invalid location format, expected LAT:LON");
