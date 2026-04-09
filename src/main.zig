@@ -4,12 +4,12 @@ const colortemp = @import("colortemp.zig");
 const drm = @import("drm.zig");
 
 const usage =
-    \\Usage: nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b BRIGHTNESS] [-v]
+    \\Usage: nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b DAY:NIGHT] [-v]
     \\
     \\  -l LAT:LON      Location in decimal degrees (e.g. 47.37:8.54)
     \\  -t DAY:NIGHT    Color temperatures in Kelvin (e.g. 6500:4500)
     \\  -d CARD         DRM card index to use (default: auto-detect 0-9)
-    \\  -b BRIGHTNESS   Brightness multiplier 0.0-1.0 (default: 1.0)
+    \\  -b DAY:NIGHT    Brightness multipliers 0.0-1.0 (default: 1.0:0.8)
     \\  -v              Verbose output
     \\
 ;
@@ -20,7 +20,8 @@ const Args = struct {
     day_k: u32 = 6500,
     night_k: u32 = 4500,
     card: ?u8 = null,
-    brightness: f64 = 1.0,
+    day_brightness: f64 = 1.0,
+    night_brightness: f64 = 0.8,
     verbose: bool = false,
     lat_set: bool = false,
     temp_set: bool = false,
@@ -48,7 +49,7 @@ pub fn main() !void {
             cfg.card = std.fmt.parseInt(u8, val, 10) catch fatal("invalid card index");
         } else if (std.mem.eql(u8, arg, "-b")) {
             const val = args_iter.next() orelse fatal("missing value for -b");
-            cfg.brightness = std.fmt.parseFloat(f64, val) catch fatal("invalid brightness value");
+            cfg = parseBrightness(cfg, val) catch fatal("invalid brightness format, expected DAY:NIGHT");
         } else if (std.mem.eql(u8, arg, "-v")) {
             cfg.verbose = true;
         } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
@@ -75,6 +76,7 @@ pub fn main() !void {
     });
     const factor = solar.blendFactor(elevation);
     const kelvin = solar.interpolateTemp(cfg.day_k, cfg.night_k, factor);
+    const brightness = cfg.night_brightness + factor * (cfg.day_brightness - cfg.night_brightness);
 
     if (cfg.verbose) {
         std.log.info("solar elevation: {d:.2}°, blend: {d:.3}, temperature: {d}K", .{ elevation, factor, kelvin });
@@ -84,7 +86,7 @@ pub fn main() !void {
     const rgb = colortemp.kelvinToRgb(kelvin);
 
     if (cfg.verbose) {
-        std.log.info("gamma RGB: R={d:.4} G={d:.4} B={d:.4} brightness={d:.3}", .{ rgb.r, rgb.g, rgb.b, cfg.brightness });
+        std.log.info("gamma RGB: R={d:.4} G={d:.4} B={d:.4} brightness={d:.3}", .{ rgb.r, rgb.g, rgb.b, brightness });
     }
 
     // Apply gamma to DRM
@@ -92,7 +94,7 @@ pub fn main() !void {
         .r = rgb.r,
         .g = rgb.g,
         .b = rgb.b,
-        .brightness = cfg.brightness,
+        .brightness = brightness,
     }) catch |err| {
         std.log.err("DRM error: {s}", .{@errorName(err)});
         if (err == drm.DrmError.MasterUnavailable) {
@@ -126,5 +128,13 @@ fn parseTemps(cfg: Args, val: []const u8) !Args {
     result.day_k = try std.fmt.parseInt(u32, val[0..colon], 10);
     result.night_k = try std.fmt.parseInt(u32, val[colon + 1 ..], 10);
     result.temp_set = true;
+    return result;
+}
+
+fn parseBrightness(cfg: Args, val: []const u8) !Args {
+    const colon = std.mem.indexOfScalar(u8, val, ':') orelse return error.InvalidFormat;
+    var result = cfg;
+    result.day_brightness = try std.fmt.parseFloat(f64, val[0..colon]);
+    result.night_brightness = try std.fmt.parseFloat(f64, val[colon + 1 ..]);
     return result;
 }

@@ -24,12 +24,12 @@ The binary is output to `zig-out/bin/nebula-drm`.
 ## Usage
 
 ```
-nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b BRIGHTNESS] [-v]
+nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b DAY:NIGHT] [-v]
 
   -l LAT:LON      Location in decimal degrees (e.g. 47.37:8.54)
   -t DAY:NIGHT    Color temperatures in Kelvin (e.g. 6500:4500)
   -d CARD         DRM card index (default: auto-detect)
-  -b BRIGHTNESS   Brightness multiplier 0.0–1.0 (default: 1.0)
+  -b DAY:NIGHT    Brightness multipliers 0.0–1.0 (default: 1.0:0.8)
   -v              Verbose output
 ```
 
@@ -58,8 +58,8 @@ NEBULA_LOCATION=47.37:8.54
 # Color temperatures in Kelvin (day:night)
 NEBULA_TEMP=6500:4500
 
-# Brightness multiplier (0.0 to 1.0)
-NEBULA_BRIGHTNESS=1.0
+# Brightness multipliers (day:night), 0.0 to 1.0
+NEBULA_BRIGHTNESS=1.0:0.8
 
 # DRM card index to use (leave empty for auto-detect)
 # NEBULA_CARD=-d 1
