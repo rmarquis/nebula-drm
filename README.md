@@ -35,6 +35,18 @@ nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b DAY:NIGHT] [-v]
 
 The tool must run before the display manager. Running it inside an active compositor session will fail because the compositor holds DRM master.
 
+## Mid-session refresh
+
+The gamma setting applied at boot reflects the solar position at that time. If the session runs across a day/night transition, the setting will be stale.
+
+To refresh mid-session, switch to a text console (the compositor releases DRM master on VT switch), restart the service, then switch back:
+
+1. `Ctrl+Alt+F3`
+2. `sudo systemctl restart nebula-drm`
+3. `Ctrl+Alt+F2`
+
+The service re-reads `/etc/nebula-drm.conf` and recomputes the temperature from the current time. The updated gamma persists after switching back to the graphical session.
+
 ## Manual Installation
 
 ### Binary
