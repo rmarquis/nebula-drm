@@ -4,7 +4,7 @@ DRM-based color temperature tool with solar position calculation.
 
 ## Purpose
 
-COSMIC DE does not implement the `wlr-gamma-control-unstable-v1` Wayland protocol, so tools like redshift, wlsunset, and gammastep cannot control color temperature from within the session. The workaround is to manipulate DRM gamma tables directly via libdrm, before the compositor acquires DRM master.
+COSMIC DE does not implement the `wlr-gamma-control-unstable-v1` Wayland protocol, so tools like wlsunset and gammastep cannot control color temperature from within the session. Redshift is X11-only and does not work on Wayland at all. The workaround is to manipulate DRM gamma tables directly via libdrm, before the compositor acquires DRM master.
 
 nebula-drm applies a color temperature to all active displays based on the current UTC time and your geographic position. It transitions smoothly between day and night temperatures across civil twilight (solar elevation −6° to +6°). It is designed to run once at boot, before the display manager starts, and the gamma setting persists for the duration of the session since COSMIC does not reset gamma tables it does not manage.
 
