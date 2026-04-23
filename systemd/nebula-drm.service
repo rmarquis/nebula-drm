@@ -8,7 +8,7 @@ After=systemd-udev-settle.service
 Type=oneshot
 RemainAfterExit=yes
 EnvironmentFile=/etc/nebula-drm.conf
-ExecStart=/usr/bin/nebula-drm -l ${NEBULA_LOCATION} -t ${NEBULA_TEMP} -b ${NEBULA_BRIGHTNESS} ${NEBULA_CARD} -v
+ExecStart=/bin/sh -c 'exec /usr/bin/nebula-drm -l "$NEBULA_LOCATION" -t "$NEBULA_TEMP" -b "$NEBULA_BRIGHTNESS" ${NEBULA_CARD:+-d "$NEBULA_CARD"} -v'
 # Needs DRM master, which requires root at boot before any session exists
 User=root
 # Sandbox

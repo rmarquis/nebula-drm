@@ -76,7 +76,7 @@ NEBULA_TEMP=6500:4500
 NEBULA_BRIGHTNESS=1.0:0.8
 
 # DRM card index to use (leave empty for auto-detect)
-# NEBULA_CARD=-d 1
+# NEBULA_CARD=1
 ```
 
 ### systemd Service
