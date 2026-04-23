@@ -26,12 +26,12 @@ The binary is output to `zig-out/bin/nebula-drm`.
 ## Usage
 
 ```
-nebula-drm -l LAT:LON -t DAY:NIGHT [-d CARD] [-b DAY:NIGHT] [-v]
+nebula-drm -l LAT:LON -t DAY:NIGHT [-b DAY:NIGHT] [-d CARD] [-v]
 
   -l LAT:LON      Location in decimal degrees (e.g. 47.37:8.54)
   -t DAY:NIGHT    Color temperatures in Kelvin (e.g. 6500:4500)
-  -d CARD         DRM card index (default: auto-detect)
   -b DAY:NIGHT    Brightness multipliers 0.0–1.0 (default: 1.0:0.8)
+  -d CARD         DRM card index (default: auto-detect)
   -v              Verbose output
 ```
 
@@ -43,9 +43,9 @@ The gamma setting applied at boot reflects the solar position at that time. If t
 
 To refresh mid-session, switch to a text console (the compositor releases DRM master on VT switch), restart the service, then switch back:
 
-1. `Ctrl+Alt+F3`
+1. `Ctrl+Alt+F2`
 2. `sudo systemctl restart nebula-drm`
-3. `Ctrl+Alt+F2`
+3. `Ctrl+Alt+F1`
 
 The service re-reads `/etc/nebula-drm.conf` and recomputes the temperature from the current time. The updated gamma persists after switching back to the graphical session.
 
