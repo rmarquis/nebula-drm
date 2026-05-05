@@ -27,12 +27,10 @@ const Args = struct {
     temp_set: bool = false,
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
-    var args_iter = std.process.args();
+    var args_iter = std.process.Args.Iterator.init(init.minimal.args);
     _ = args_iter.next(); // skip argv[0]
 
     var cfg = Args{};
@@ -69,7 +67,7 @@ pub fn main() !void {
     }
 
     // Compute solar position from current UTC time and location
-    const now = std.time.timestamp();
+    const now: i64 = @intCast(@divTrunc(std.Io.Timestamp.now(init.io, .real).nanoseconds, std.time.ns_per_s));
     const elevation = solar.solarElevation(.{
         .latitude_deg = cfg.lat,
         .longitude_deg = cfg.lon,

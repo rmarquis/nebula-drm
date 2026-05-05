@@ -2,6 +2,8 @@ const std = @import("std");
 const colortemp = @import("colortemp.zig");
 
 const c = @cImport({
+    @cInclude("fcntl.h");
+    @cInclude("unistd.h");
     @cInclude("xf86drm.h");
     @cInclude("xf86drmMode.h");
 });
@@ -45,9 +47,9 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
     var path_buf: [32]u8 = undefined;
     const path = std.fmt.bufPrintZ(&path_buf, "/dev/dri/card{d}", .{card_index}) catch return DrmError.OpenFailed;
 
-    const fd_usize = std.posix.open(path, .{ .ACCMODE = .RDWR }, 0) catch return DrmError.OpenFailed;
-    const fd: c_int = @intCast(fd_usize);
-    defer std.posix.close(fd_usize);
+    const fd: c_int = c.open(path.ptr, c.O_RDWR, @as(c_uint, 0));
+    if (fd < 0) return DrmError.OpenFailed;
+    defer _ = c.close(fd);
 
     if (c.drmSetMaster(fd) != 0) return DrmError.MasterUnavailable;
     defer _ = c.drmDropMaster(fd);
