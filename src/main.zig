@@ -67,7 +67,7 @@ pub fn main(init: std.process.Init) !void {
     }
 
     // Compute solar position from current UTC time and location
-    const now: i64 = @intCast(@divTrunc(std.Io.Timestamp.now(init.io, .real).nanoseconds, std.time.ns_per_s));
+    const now = std.Io.Clock.now(.real, init.io).toSeconds();
     const elevation = solar.solarElevation(.{
         .latitude_deg = cfg.lat,
         .longitude_deg = cfg.lon,
