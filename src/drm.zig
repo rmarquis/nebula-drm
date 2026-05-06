@@ -58,6 +58,9 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
     defer c.drmModeFreeResources(res);
 
     const crtc_count: usize = @intCast(res.count_crtcs);
+    if (crtc_count == 0) return DrmError.GetResourcesFailed;
+
+    var any_applied = false;
     for (0..crtc_count) |i| {
         const crtc_id = res.crtcs[i];
         const crtc: *c.drmModeCrtc = @ptrCast(c.drmModeGetCrtc(fd, crtc_id) orelse continue);
@@ -85,5 +88,8 @@ fn applyGamma(allocator: std.mem.Allocator, card_index: u8, gamma: GammaRgb) Drm
             std.log.err("drmModeCrtcSetGamma failed for CRTC {d}: errno {d}", .{ crtc_id, -ret });
             return DrmError.SetGammaFailed;
         }
+        any_applied = true;
     }
+
+    if (!any_applied) return DrmError.GetResourcesFailed;
 }
